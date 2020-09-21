@@ -29,8 +29,8 @@ class HomeView(ModelViewSet):
             method: List[str] = serializer.data.get('method')
             text: str = serializer.data.get('text')
             analyzed: Dict = text_handler(method, text)
-
             headers = self.get_success_headers(serializer.data)
+
             return Response(
                 data={"query": serializer.data, "data": analyzed},
                 status=status.HTTP_202_ACCEPTED, headers=headers)
