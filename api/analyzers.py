@@ -109,6 +109,30 @@ def get_antonyms(text: str) -> Dict[str, str]:
     return result
 
 
+def get_definitions(text: str) -> Dict[str, Union[List, str]]:
+
+    """ Функция для нахождения определений конкретных слов. """
+
+    b_text = TextBlob(text)
+
+    if b_text.detect_language() != 'en':
+        b_text.translate(to='en')
+
+    words: List = []
+    definitions: List = []
+
+    for x in b_text.words:
+        word = Word(x)
+        defins: List = [z for z in word.definitions]
+
+        if len(defins) > 0:
+            words.append(x)
+            definitions.append(defins)
+
+    couple = dict(zip(words, definitions))
+    return couple
+
+
 def translate(text: str) -> Union[str, Tuple[str, str]]:
 
     """ Ничего необычного. Функция, переводящая с русского на английский или наоборот. """

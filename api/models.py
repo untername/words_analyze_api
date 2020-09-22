@@ -7,6 +7,7 @@ CHOICES = [
     ('count-words', 'Determining word frequencies'),
     ('synonyms', 'Synonyms'),
     ('antonyms', 'Antonyms'),
+    ('definitions', 'Definitions')
     ]
 
 
