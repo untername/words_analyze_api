@@ -1,5 +1,5 @@
 from typing import Union, Dict, List, Tuple
-from .analyzers import text_polarity, wordcount, get_synonyms, translate, get_antonyms, get_definitions
+from .analyzers import text_polarity, wordcount, get_synonyms, translate, get_antonyms, get_definitions, get_correct
 
 
 def text_handler(choice: List[str], text: str) -> Dict[str, Union[str, Tuple, Dict]]:
@@ -30,5 +30,8 @@ def text_handler(choice: List[str], text: str) -> Dict[str, Union[str, Tuple, Di
     if 'definitions' in choice:
         define_resp = get_definitions(text)
         response['definitions'] = define_resp
+    if 'correct' in choice:
+        corr_resp = get_correct(text)
+        response['correct'] = corr_resp
 
     return response

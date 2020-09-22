@@ -150,3 +150,17 @@ def translate(text: str) -> Union[str, Tuple[str, str]]:
         Perhaps the text contains words from several languages. If so, check them separately."""
     else:
         return text, str(response)
+
+
+def get_correct(text: str) -> Dict[str, str]:
+
+    """ Функция, возвращающая текст без ошибок. """
+
+    b_text = TextBlob(text)
+
+    if b_text.detect_language() != 'en':
+        b_text.translate(to='en')
+
+    corrected_word = b_text.correct()
+
+    return {"corrected": str(corrected_word)}
