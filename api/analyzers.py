@@ -1,15 +1,17 @@
 from textblob import TextBlob, Word
 from textblob.exceptions import NotTranslated
-from typing import Dict, Union, Tuple, List
+from typing import Dict, Union, Tuple, List, Callable
 import operator
 
 
-def translater(func):
+def translater(func: Callable) -> Callable:
 
     """ Декоратор, создающий инстанс класса TextBlob и переводящий текст. Это необходимо для всех методов. """
 
-    def wrapper(*args, **kwargs):
+    def wrapper(*args: Tuple, **kwargs: Dict) -> Union[Callable, str]:
+
         targs = TextBlob(*args)
+
         if targs.detect_language() != 'en':
             try:
                 targs = targs.translate(to='en')
