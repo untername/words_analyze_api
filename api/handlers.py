@@ -12,6 +12,15 @@ def text_handler(choice: List[str], text: str) -> Dict[str, Union[str, Tuple, Di
 
     response: Dict = {}
 
+    if 'translate' in choice:
+        translate_response = translate(text)
+        response['translate'] = translate_response
+    if 'definitions' in choice:
+        define_resp = get_definitions(text)
+        response['definitions'] = define_resp
+    if 'correct' in choice:
+        corr_resp = get_correct(text)
+        response['correct'] = corr_resp
     if 'emocolor' in choice:
         emocolor_response = text_polarity(text)
         response['emotional-color'] = emocolor_response
@@ -24,14 +33,5 @@ def text_handler(choice: List[str], text: str) -> Dict[str, Union[str, Tuple, Di
     if 'antonyms' in choice:
         ant_response = get_antonyms(text)
         response['antonyms'] = ant_response
-    if 'translate' in choice:
-        translate_response = translate(text)
-        response['translate'] = translate_response
-    if 'definitions' in choice:
-        define_resp = get_definitions(text)
-        response['definitions'] = define_resp
-    if 'correct' in choice:
-        corr_resp = get_correct(text)
-        response['correct'] = corr_resp
 
     return response

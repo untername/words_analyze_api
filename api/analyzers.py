@@ -4,20 +4,36 @@ from typing import Dict, Union, Tuple, List
 import operator
 
 
-def wordcount(text: str) -> Dict[str, str]:
+def translater(func):
+
+    """ Декоратор, создающий инстанс класса TextBlob и переводящий текст. Это необходимо для всех методов. """
+
+    def wrapper(*args, **kwargs):
+        targs = TextBlob(*args)
+        if targs.detect_language() != 'en':
+            try:
+                targs = targs.translate(to='en')
+            except NotTranslated:
+                return """Unfortunately, the language could not be determined.
+                Perhaps the text contains words from several languages. If so, check them separately."""
+        return func(targs, **kwargs)
+    return wrapper
+
+
+@translater
+def wordcount(text: TextBlob) -> Dict[str, str]:
 
     """ Функция, подсчитывающая частотность слов. Отбрасывает ненужные символы и сортирует результат. """
 
-    textb: TextBlob = TextBlob(text)
-
     result = sorted(
-        {x: [y] for x in textb.word_counts.items() for y in textb.word_counts.items()},
+        {x: [y] for x in text.word_counts.items() for y in text.word_counts.items()},
         key=operator.itemgetter(1), reverse=True)
 
     return dict(result)
 
 
-def text_polarity(text: str) -> Union[str, Dict[str, str]]:
+@translater
+def text_polarity(text: TextBlob) -> Union[str, Dict[str, str]]:
 
     """
     Функция, анализирующая полярность и субъективность полученного текста.
@@ -25,23 +41,45 @@ def text_polarity(text: str) -> Union[str, Dict[str, str]]:
     Для корректной работы все переводится на английский язык, а уже потом анализируется.
     """
 
-    textb: TextBlob = TextBlob(text)
-
-    if textb.detect_language() != "en":
-        try:
-            textb = textb.translate(to="en")
-        except NotTranslated:
-            return """Unfortunately, the language could not be determined.
-            Perhaps the text contains words from several languages. If so, check them separately."""
-
     result = {
-        "Polariry": str(textb.sentiment.polarity),
-        "Subjectivity": str(textb.sentiment.subjectivity)}
+        "Polariry": str(text.sentiment.polarity),
+        "Subjectivity": str(text.sentiment.subjectivity)}
 
     return result
 
 
-def get_synonyms(text: str) -> Dict[str, List[str]]:
+@translater
+def get_correct(text: TextBlob) -> Dict[str, str]:
+
+    """ Функция, возвращающая текст без ошибок. """
+
+    corrected_word = text.correct()
+
+    return {"corrected": str(corrected_word)}
+
+
+@translater
+def get_definitions(text: TextBlob) -> Dict[str, Union[List, str]]:
+
+    """ Функция для нахождения определений конкретных слов. """
+
+    words: List = []
+    definitions: List = []
+
+    for x in text.words:
+        word = Word(x)
+        defins: List = [z for z in word.definitions]
+
+        if len(defins) > 0:
+            words.append(x)
+            definitions.append(defins)
+
+    couple = dict(zip(words, definitions))
+    return couple
+
+
+@translater
+def get_synonyms(text: TextBlob) -> Dict[str, List[str]]:
 
     """
     Функция, находящая синонимы каждого слова в полученном тексте.
@@ -49,15 +87,10 @@ def get_synonyms(text: str) -> Dict[str, List[str]]:
     Для корректной работы текст изначально переводится на английский.
     """
 
-    textb = TextBlob(text)
-
-    if textb.detect_language() != "en":
-        textb = textb.translate(to="en")
-
     words: List = []
     synonims: List = []
 
-    for x in textb.words:
+    for x in text.words:
         syns = set()  # Дабы не было повторений.
         item = Word(x)
         for synset in item.synsets:
@@ -74,19 +107,15 @@ def get_synonyms(text: str) -> Dict[str, List[str]]:
     return result
 
 
-def get_antonyms(text: str) -> Dict[str, str]:
+@translater
+def get_antonyms(text: TextBlob) -> Dict[str, str]:
 
     """ Функция, возвращающая список антонимов. """
-
-    btext = TextBlob(text)
-
-    if btext.detect_language() != "en":
-        btext = btext.translate(to="en")
 
     words: List = []
     antonyms: List = []
 
-    for x in btext.words:
+    for x in text.words:
 
         xword = Word(x)
         x_antonyms: List = []
@@ -109,30 +138,6 @@ def get_antonyms(text: str) -> Dict[str, str]:
     return result
 
 
-def get_definitions(text: str) -> Dict[str, Union[List, str]]:
-
-    """ Функция для нахождения определений конкретных слов. """
-
-    b_text = TextBlob(text)
-
-    if b_text.detect_language() != 'en':
-        b_text.translate(to='en')
-
-    words: List = []
-    definitions: List = []
-
-    for x in b_text.words:
-        word = Word(x)
-        defins: List = [z for z in word.definitions]
-
-        if len(defins) > 0:
-            words.append(x)
-            definitions.append(defins)
-
-    couple = dict(zip(words, definitions))
-    return couple
-
-
 def translate(text: str) -> Union[str, Tuple[str, str]]:
 
     """ Ничего необычного. Функция, переводящая с русского на английский или наоборот. """
@@ -150,17 +155,3 @@ def translate(text: str) -> Union[str, Tuple[str, str]]:
         Perhaps the text contains words from several languages. If so, check them separately."""
     else:
         return text, str(response)
-
-
-def get_correct(text: str) -> Dict[str, str]:
-
-    """ Функция, возвращающая текст без ошибок. """
-
-    b_text = TextBlob(text)
-
-    if b_text.detect_language() != 'en':
-        b_text.translate(to='en')
-
-    corrected_word = b_text.correct()
-
-    return {"corrected": str(corrected_word)}
