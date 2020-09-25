@@ -17,14 +17,9 @@ def formalizer(translate: bool = True) -> Callable:
         def wrapper(*args: Tuple[str]) -> Union[Callable, str]:
 
             targs = TextBlob(*args)
-
             if translate:
                 if targs.detect_language() != 'en':
-                    try:
-                        targs = targs.translate(to='en')
-                    except NotTranslated:
-                        return """Unfortunately, the language could not be determined.
-                        Perhaps the text contains words from several languages. If so, check them separately."""
+                    targs = targs.translate(to='en')
 
             return func(targs)
         return wrapper
