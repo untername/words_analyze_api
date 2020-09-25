@@ -4,25 +4,34 @@ from typing import Dict, Union, Tuple, List, Callable
 import operator
 
 
-def translater(func: Callable) -> Callable:
+def formalizer(translate: bool = True) -> Callable:
 
-    """ Декоратор, создающий инстанс класса TextBlob и переводящий текст. Это необходимо для всех методов. """
+    """
+    'Фабрика' декораторов. В зависимости от значения аргумента translate, текст переводится или нет.
 
-    def wrapper(*args: Tuple, **kwargs: Dict) -> Union[Callable, str]:
+    По умолчанию - True.
+    """
 
-        targs = TextBlob(*args)
+    def decor(func: Callable) -> Callable:
 
-        if targs.detect_language() != 'en':
-            try:
-                targs = targs.translate(to='en')
-            except NotTranslated:
-                return """Unfortunately, the language could not be determined.
-                Perhaps the text contains words from several languages. If so, check them separately."""
-        return func(targs, **kwargs)
-    return wrapper
+        def wrapper(*args: Tuple[str]) -> Union[Callable, str]:
+
+            targs = TextBlob(*args)
+
+            if translate:
+                if targs.detect_language() != 'en':
+                    try:
+                        targs = targs.translate(to='en')
+                    except NotTranslated:
+                        return """Unfortunately, the language could not be determined.
+                        Perhaps the text contains words from several languages. If so, check them separately."""
+
+            return func(targs)
+        return wrapper
+    return decor
 
 
-@translater
+@formalizer(False)
 def wordcount(text: TextBlob) -> Dict[str, str]:
 
     """ Функция, подсчитывающая частотность слов. Отбрасывает ненужные символы и сортирует результат. """
@@ -34,7 +43,7 @@ def wordcount(text: TextBlob) -> Dict[str, str]:
     return dict(result)
 
 
-@translater
+@formalizer()
 def text_polarity(text: TextBlob) -> Union[str, Dict[str, str]]:
 
     """
@@ -50,7 +59,7 @@ def text_polarity(text: TextBlob) -> Union[str, Dict[str, str]]:
     return result
 
 
-@translater
+@formalizer()
 def get_correct(text: TextBlob) -> Dict[str, str]:
 
     """ Функция, возвращающая текст без ошибок. """
@@ -60,7 +69,7 @@ def get_correct(text: TextBlob) -> Dict[str, str]:
     return {"corrected": str(corrected_word)}
 
 
-@translater
+@formalizer()
 def get_definitions(text: TextBlob) -> Dict[str, Union[List, str]]:
 
     """ Функция для нахождения определений конкретных слов. """
@@ -80,7 +89,7 @@ def get_definitions(text: TextBlob) -> Dict[str, Union[List, str]]:
     return couple
 
 
-@translater
+@formalizer()
 def get_synonyms(text: TextBlob) -> Dict[str, List[str]]:
 
     """
@@ -93,7 +102,7 @@ def get_synonyms(text: TextBlob) -> Dict[str, List[str]]:
     synonims: List = []
 
     for x in text.words:
-        syns = set()  # Дабы не было повторений.
+        syns = set()
         item = Word(x)
         for synset in item.synsets:
             for lem in synset.lemmas():
@@ -109,7 +118,7 @@ def get_synonyms(text: TextBlob) -> Dict[str, List[str]]:
     return result
 
 
-@translater
+@formalizer()
 def get_antonyms(text: TextBlob) -> Dict[str, str]:
 
     """ Функция, возвращающая список антонимов. """
