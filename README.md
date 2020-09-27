@@ -1,7 +1,7 @@
 # Simple api for text analysis.
 
 # Made by:
-1) Translation, Russian / English. The limit is higher than that of Google Translate.
+1) Translation, Russian / English. The limit is higher than many other translators. Thanks API.
 2) Determination of the emotional color of expression.
 3) Search for synonyms, antonyms.
 4) Frequency of words.
