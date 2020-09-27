@@ -55,13 +55,16 @@ def text_polarity(text: TextBlob) -> Union[str, Dict[str, str]]:
 
 
 @formalizer()
-def get_correct(text: TextBlob) -> Dict[str, str]:
+def get_correct(text: TextBlob) -> Dict[str, Union[str, Dict]]:
 
-    """ Функция, возвращающая текст без ошибок. """
+    """ Функция, возвращающая текст без ошибок и варианты правильного написания слов. """
 
     corrected_word = text.correct()
+    correctly_vars: Dict = {x: str(Word(x).spellcheck()[0][0]) for x in text.words}
 
-    return {"corrected": str(corrected_word)}
+    return {
+        "corrected": str(corrected_word),
+        "correctly words": correctly_vars}
 
 
 @formalizer()
@@ -73,8 +76,7 @@ def get_definitions(text: TextBlob) -> Dict[str, Union[List, str]]:
     definitions: List = []
 
     for x in text.words:
-        word = Word(x)
-        defins: List = [z for z in word.definitions]
+        defins: List = [z for z in Word(x).definitions]
 
         if len(defins) > 0:
             words.append(x)
