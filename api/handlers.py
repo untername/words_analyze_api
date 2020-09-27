@@ -1,8 +1,8 @@
-from typing import Union, Dict, List, Tuple
+from typing import Union, Dict, Tuple, Set
 from .analyzers import text_polarity, wordcount, get_synonyms, translate, get_antonyms, get_definitions, get_correct
 
 
-def text_handler(choice: List[str], text: str) -> Dict[str, Union[str, Tuple, Dict]]:
+def text_handler(choice: Set[str], text: str) -> Dict[str, Union[str, Tuple, Dict]]:
 
     """
     Функция, обрабатывающая текст, введенный в текстовое поле или отправленный в файле.
