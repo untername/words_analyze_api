@@ -6,7 +6,7 @@
 3) Search for synonyms, antonyms.
 4) Frequency of words.
 5) Determining the meanings of words.
-6) Correction of speech errors.
+6) Correction of speech errors. Spelling options for each word
 
 The results are sent in JSON format.
 
