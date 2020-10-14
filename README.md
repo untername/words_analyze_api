@@ -6,9 +6,15 @@
 3) Search for synonyms, antonyms.
 4) Frequency of words.
 5) Determining the meanings of words.
-6) Correction of speech errors. Spelling options for each word
+6) Correction of speech errors. Spelling options for each word.
 
 The results are sent in JSON format.
+
+# Added:
+1) Registration.
+2) Authorization.
+3) Authentication by token.
+4) Later I will add authorization via social networks.
 
 # Used:
 1) Django REST Framework.
