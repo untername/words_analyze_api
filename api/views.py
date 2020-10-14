@@ -2,7 +2,7 @@ from rest_framework.viewsets import ModelViewSet
 from rest_framework.response import Response
 from rest_framework.request import Request
 from rest_framework import status
-from typing import Any, Dict, Set
+from typing import Dict, Set, Tuple
 from .serializers import WordSerializer
 from .models import Analyzer
 from .handlers import text_handler
@@ -20,7 +20,7 @@ class HomeView(ModelViewSet):
     queryset = Analyzer.objects.none()
     serializer_class = WordSerializer
 
-    def create(self, request: Request, *args: Any, **kwargs: Any) -> Response:
+    def create(self, request: Request, *args: Tuple, **kwargs: Dict) -> Response:
 
         serializer = self.get_serializer(data=request.data)
 
