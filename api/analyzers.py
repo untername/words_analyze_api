@@ -14,7 +14,7 @@ def formalizer(translate: bool = True) -> Callable:
 
     def decor(func: Callable) -> Callable:
 
-        def wrapper(*args: Tuple[str]) -> Union[Callable, str]:
+        def wrapper(*args: Tuple[str]) -> Callable:
 
             targs = TextBlob(*args)
             if translate:
